@@ -1,0 +1,29 @@
+# Local-only planning and challenge material
+PLAN.md
+magicpin-ai-challenge/
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Secrets and local config
+.env
+.env.*
+!.env.example
+
+# Generated output
+out/
+submission.jsonl
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/

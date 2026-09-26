@@ -1,0 +1,15 @@
+PLAN.md
+magicpin-ai-challenge/
+.claude/
+.git/
+.venv/
+.env
+.env.*
+out/
+tests/
+scripts/
+**/__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
