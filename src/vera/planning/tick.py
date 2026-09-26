@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from dataclasses import dataclass
-from datetime import UTC, date, datetime
+from datetime import date, datetime
 
 from vera.compose.composer import ComposedMessage, Composer
 from vera.compose.facts import parse_date
@@ -45,10 +45,12 @@ class TickPlanner:
         self._sim_today: date | None = None
 
     def precompose(self, trigger_id: str) -> None:
-        today = self._sim_today or datetime.now(UTC).date()
+        # Day counts in a draft depend on the judge's simulated clock, which the first tick sets.
+        if self._sim_today is None:
+            return
         bundle = self._contexts.bundle_for_trigger(trigger_id)
-        if bundle and self._sendable(bundle, today):
-            self._draft(bundle, today)
+        if bundle and self._sendable(bundle, self._sim_today):
+            self._draft(bundle, self._sim_today)
 
     async def plan(self, now: datetime, trigger_ids: list[str]) -> list[PlannedAction]:
         self._sim_today = now.date()
@@ -70,6 +72,7 @@ class TickPlanner:
         for task in self._drafts.values():
             task.cancel()
         self._drafts.clear()
+        self._sim_today = None
 
     def _select(self, now: datetime, trigger_ids: list[str]) -> list[ContextBundle]:
         bundles = [

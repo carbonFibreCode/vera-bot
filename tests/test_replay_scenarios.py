@@ -80,3 +80,15 @@ def test_ungrounded_llm_draft_falls_back_to_template(seeds: Seeds) -> None:
     assert "63%" not in action["body"]
     assert "JIDA" in action["body"]
     assert "numbers not found in FACTS" in llm.prompts[-1]
+
+
+def test_drafts_use_the_judges_clock_not_the_servers(seeds: Seeds) -> None:
+    regulation = "trg_002_compliance_dci_radiograph"
+    draft = {"body": "unused", "rationale": "unused", "template_params": []}
+    llm = FakeLLM(draft)
+    with TestClient(create_app(template_settings(), llm=llm)) as client:
+        push_all(client, seeds, with_triggers=False)
+        push(client, "trigger", regulation, seeds.triggers[regulation])
+        assert llm.prompts == []
+        tick(client, regulation, now="2026-04-26T10:30:00Z")
+    assert "days until deadline: 233" in llm.prompts[0]
